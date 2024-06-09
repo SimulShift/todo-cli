@@ -4,8 +4,8 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package main
 
 import (
-	"todo-cli/cmd"
-	"todo-cli/store"
+	"todo/cmd"
+	"todo/store"
 )
 
 func main() {
