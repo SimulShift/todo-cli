@@ -13,10 +13,10 @@ var addCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// make todo struct
 		todo := &store.Todo{
-			// generate ksuid
 			Id:        ksuid.New(),
 			Title:     args[0],
 			Completed: false,
+			Message:   args[1],
 		}
 		store.MemoryStore.AddTodo(*todo)
 		store.MemoryStore.Save()

@@ -16,7 +16,7 @@ type Todo struct {
 	Id        ksuid.KSUID `yaml:"id"`
 	Title     string      `yaml:"title"`
 	Completed bool        `yaml:"completed"`
-	message   string      `yaml:"message"`
+	Message   string      `yaml:"message"`
 }
 
 var MemoryStore = &TodoStore{
@@ -85,4 +85,15 @@ func (ts *TodoStore) ListTodos() {
 			println("❌", todo.Title)
 		}
 	}
+}
+
+// SetDone sets a todo as done
+func (ts *TodoStore) Done(id ksuid.KSUID) {
+	todo, ok := ts.store[id]
+	if !ok {
+		println("Todo not found")
+		return
+	}
+	todo.Completed = true
+	ts.store[id] = todo
 }
