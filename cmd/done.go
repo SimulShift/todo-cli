@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/segmentio/ksuid"
 	"github.com/spf13/cobra"
+	"strconv"
 	"todo/store"
 )
 
@@ -17,10 +17,11 @@ var doneCmd = &cobra.Command{
 			return
 		}
 		store.MemoryStore.Load()
-		// check arg[0] is a valid ksuid
-		id, err := ksuid.Parse(args[0])
+		// convert arg[0] to int
+		id, err := strconv.Atoi(args[0])
 		if err != nil {
-			panic(err)
+			fmt.Println("Please provide a valid todo ID")
+			return
 		}
 		found := store.MemoryStore.DoneById(id)
 		if found {
@@ -39,7 +40,7 @@ var doneCmd = &cobra.Command{
 		// Filter todos that are not done yet and collect their IDs
 		for _, todo := range todos {
 			if !todo.Done {
-				completions = append(completions, todo.Id.String())
+				completions = append(completions, todo.Title)
 			}
 		}
 		return completions, cobra.ShellCompDirectiveNoFileComp

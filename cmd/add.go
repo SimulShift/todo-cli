@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/segmentio/ksuid"
 	"github.com/spf13/cobra"
 	"todo/store"
 )
@@ -13,10 +12,9 @@ var addCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// make todo struct
 		todo := &store.Todo{
-			Id:      ksuid.New(),
 			Title:   args[0],
 			Done:    false,
-			Message: args[1],
+			Message: "",
 		}
 		store.MemoryStore.AddTodo(*todo)
 		store.MemoryStore.Save()

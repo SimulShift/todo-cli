@@ -1,7 +1,6 @@
 package store
 
 import (
-	"github.com/segmentio/ksuid"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
@@ -9,19 +8,21 @@ import (
 
 // TodoStore is a struct that holds the store for the list
 type TodoStore struct {
-	store map[ksuid.KSUID]Todo
+	store map[int]Todo
 }
 
 type Todo struct {
-	Id      ksuid.KSUID `yaml:"id"`
-	Title   string      `yaml:"title"`
-	Done    bool        `yaml:"completed"`
-	Message string      `yaml:"message"`
+	Id      int    `yaml:"id"`
+	Title   string `yaml:"title"`
+	Done    bool   `yaml:"completed"`
+	Message string `yaml:"message"`
 }
 
 var MemoryStore = &TodoStore{
-	store: make(map[ksuid.KSUID]Todo),
+	store: make(map[int]Todo),
 }
+
+var filename = ".todo-store2.yaml"
 
 func (ts *TodoStore) GetAllTodos() (todos []Todo) {
 	// get all the todos from the store
@@ -31,6 +32,17 @@ func (ts *TodoStore) GetAllTodos() (todos []Todo) {
 		todos = append(todos, todo)
 	}
 	return todos
+}
+
+// GetMaxId returns the maximum id in the store
+func (ts *TodoStore) GetMaxId() int {
+	maxId := 0
+	for _, todo := range ts.store {
+		if todo.Id > maxId {
+			maxId = todo.Id
+		}
+	}
+	return maxId
 }
 
 // AddTodo adds a new todo to the store
@@ -43,6 +55,8 @@ func (ts *TodoStore) AddTodo(t Todo) {
 		}
 
 	}
+	maxId := ts.GetMaxId()
+	t.Id = maxId + 1
 	ts.store[t.Id] = t
 }
 
@@ -62,7 +76,7 @@ func (ts *TodoStore) Save() {
 	}
 
 	// Create the full path to save the file in the home directory
-	filePath := filepath.Join(homeDir, ".todo-store.yaml")
+	filePath := filepath.Join(homeDir, filename)
 
 	err = os.WriteFile(filePath, yamlData, 0644)
 	if err != nil {
@@ -79,7 +93,7 @@ func (ts *TodoStore) Load() {
 	}
 
 	// Create the full path to save the file in the home directory
-	filePath := filepath.Join(homeDir, ".todo-store.yaml")
+	filePath := filepath.Join(homeDir, filename)
 
 	// Load yaml data from file
 	yamlData, err := os.ReadFile(filePath)
@@ -98,15 +112,15 @@ func (ts *TodoStore) Load() {
 func (ts *TodoStore) PrintTodos() {
 	for _, todo := range ts.store {
 		if todo.Done {
-			println("✅", todo.Title)
+			println(todo.Id, "✅", todo.Title)
 		} else {
-			println("❌", todo.Title)
+			println(todo.Id, "❌", todo.Title)
 		}
 	}
 }
 
 // Done sets a todo as done
-func (ts *TodoStore) DoneById(id ksuid.KSUID) bool {
+func (ts *TodoStore) DoneById(id int) bool {
 	todo, ok := ts.store[id]
 	if !ok {
 		println("Todo not found")
